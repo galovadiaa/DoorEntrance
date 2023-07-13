@@ -29,12 +29,14 @@ FPS_GT511C3 fps(4, 5); // (Arduino SS_RX = pin 4, Arduino SS_TX = pin 5)
 Adafruit_LiquidCrystal lcd(0);
 
 
+void(* resetFunc) (void) = 0;//declare reset function at address 0
+unsigned long delayAutoReset = 72000;
+unsigned long currTimeReset = 0;
+
 void setup()
-{
-  Serial.begin(9600);
-  
-  pinMode(downButtonPin, INPUT);
-  pinMode(upButtonPin, INPUT);
+{  
+  pinMode(downButtonPin, INPUT); // or INPUT_PULLUP
+  pinMode(upButtonPin, INPUT); // or INPUT_PULLUP
   pinMode(relayPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
   
@@ -53,6 +55,9 @@ void setup()
 
 void loop()
 {
+  if (millis() - currTimeReset >= delayAutoReset){ resetFunc(); }
+
+  
   currUser = IdentifyFinger();
   
 
@@ -63,6 +68,8 @@ void loop()
   
      digitalWrite(buzzerPin, HIGH);
      digitalWrite(relayPin ,HIGH);
+
+     EntrenceLCD(currUser);
   }
     
   if (isOpenDoor){
@@ -70,6 +77,7 @@ void loop()
       digitalWrite(buzzerPin, LOW);
       digitalWrite(relayPin, LOW);
       isOpenDoor = false;
+      HomePageLCD();
     }
   }
 
@@ -85,4 +93,6 @@ void loop()
       isMenu = false;
     }
   }
+
+  delay(200);
 }
