@@ -1,7 +1,7 @@
 int IdentifyFinger(){
   if (fps.IsPressFinger())
     {
-      fps.CaptureFinger(false);
+      fps.CaptureFinger(false);      
       int id = fps.Identify1_N();
       
       if (id < 200)

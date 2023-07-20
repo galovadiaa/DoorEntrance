@@ -19,7 +19,7 @@ bool isMenu = false;
 const int delayEnterMenu = 5000;
 const int delayDoor = 3000;
 unsigned long currAdminPress;
-unsigned long timeA;
+unsigned long timeDoorOpen;
 boolean isOpenDoor = false;
 
 boolean setupSystem = false; // indicates if the system is already ran once
@@ -55,30 +55,25 @@ void setup()
 
 void loop()
 {
-  if (millis() - currTimeReset >= delayAutoReset){ resetFunc(); }
-
+  //if (millis() - currTimeReset >= delayAutoReset){ resetFunc(); }
   
   currUser = IdentifyFinger();
-  
+  if (currUser == -1) return;  
 
   // enter door
-  if (currUser != -1  && currUser != adminFinger && !isOpenDoor){  
-     isOpenDoor = true;
-     timeA = millis();
-  
+  if (currUser != adminFinger){  
+     timeDoorOpen = millis();
+     EntrenceLCD(currUser);
+     
      digitalWrite(buzzerPin, HIGH);
      digitalWrite(relayPin ,HIGH);
+     
+     while(!(millis() - timeDoorOpen >= delayDoor)) { lcd.blink(); delay(100); lcd.noBlink(); delay(100); }
+     lcd.noBlink();
 
-     EntrenceLCD(currUser);
-  }
-    
-  if (isOpenDoor){
-    if (millis() - timeA >= delayDoor){
-      digitalWrite(buzzerPin, LOW);
-      digitalWrite(relayPin, LOW);
-      isOpenDoor = false;
-      HomePageLCD();
-    }
+     HomePageLCD();
+     digitalWrite(buzzerPin, LOW);
+     digitalWrite(relayPin, LOW);
   }
 
   // menu
@@ -94,5 +89,5 @@ void loop()
     }
   }
 
-  delay(200);
+  delay(100);
 }
