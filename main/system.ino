@@ -1,25 +1,24 @@
 void resetSystem(){
-  int elapsedTime = 10000;
+  fps.SetLED(false);
+  int delayOptionAdminDeletion = 5000;
   unsigned long currTime = millis();
+  bool deletionOption = false;
 
-  while(!upButtonPin && !downButtonPin){
-    if(millis() - currTime >= (elapsedTime - 8000)){
+  while(!digitalRead(upButtonPin) && !digitalRead(downButtonPin)){
+    if(millis() - currTime >= (delayOptionAdminDeletion)){
       lcdPrint("WARNING!!! ADMIN DELETEION");
-    }
-    if(millis() - currTime >= (elapsedTime - 5000)){
-      fps.DeleteID(adminFinger);
-      lcdPrint("ADMIN HAS BEEN DELETED!");
-    }
-    if(millis() - currTime >= elapsedTime - 2000){
-      lcdPrint("WARNING!!! USERS DELETION");
-    }
-    if(millis() - currTime >= elapsedTime){
-      fps.DeleteAll();
-      lcdPrint("USERS HAS BEEN DELETED");
-      delay(2000);
-      lcd.clear();
-      return;
+      deletionOption = true;
+      break;
     }
   }
+  delay(2000);
+
+  fps.SetLED(true);
+  if (deletionOption == true){
+    if(toDelete()){ fps.DeleteID(adminFinger); lcdPrint("ADMIN HAS BEEN DELETED!"); }
+    else lcdPrint("NOT DELETED!");
+    delay(2000);
+  }
+  
   return;
 }

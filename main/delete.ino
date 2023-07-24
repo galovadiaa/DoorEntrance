@@ -26,8 +26,19 @@ void Delete(){
 
     toggleSelector(1, 6, String(id));
     delay(100);
-
   }
+  
+  if (deleteNotify()) { fps.DeleteID(id); lcdPrint("    Deleted!    ");}
+  else lcdPrint("   Not Deleted!  ");
+}
+
+bool DeleteByID(int id){
+  if (id > 200 or id < 0) return false;
+  
+  if (deleteNotify()) { fps.DeleteID(id); lcdPrint("    Deleted!    "); return true;}
+  
+  lcdPrint("   Not Deleted!  ");
+  return false;
 }
 
 bool deleteNotify(){
@@ -39,37 +50,21 @@ bool deleteNotify(){
   lcd.print("ID ");
   lcd.print("Has Data ");
   delay(3000);
+
+  return toDelete();
+}
+
+bool toDelete(){
+  bool isDelete = false;
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("  Delete ID?   ");
-  delay(200);
-
-  while (fps.IsPressFinger()) {
-    if (cnt <= 5) {
-      lcd.setCursor (0, 1);
-      lcd.print("   Yes  / > No  ");
-      deleteFlag = false;
-      delay(100);
-      cnt++;
+  lcd.setCursor(0, 1);
+  lcd.print("   Yes  / > No  ");
+  while(!fps.IsPressFinger()) {
+    lcd.setCursor(0, 1);
+    if(!digitalRead(upButtonPin)) { lcd.print(" > Yes  /   No  "); isDelete = true; }
+    if(!digitalRead(downButtonPin)) { lcd.print("   Yes  / > No  "); isDelete = false; }
     }
-    else if (cnt > 5 && cnt < 11) {
-      lcd.setCursor (0, 1);
-      lcd.print(" > Yes  /   No  ");
-      deleteFlag = true;
-      delay(100);
-      cnt++;
-    }
-    else cnt = 0;
-  }
-  if (deleteFlag == false) {
-    lcd.clear();
-    lcdPrint("   Not Deleted!  ");
-    return false;
-  }
-  else if (deleteFlag == true) {
-    lcd.clear();
-    lcdPrint("    Deleted!    ");
-    return true;
-
-  }
+  return isDelete;
 }

@@ -20,4 +20,4 @@ void EntrenceLCD(int id){
   lcd.clear();
   lcd.setCursor(1, 0);
   lcd.print("Welcome ID: " + String(id));
-  }
+}

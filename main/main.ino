@@ -5,6 +5,7 @@
 #include "Adafruit_LiquidCrystal.h"
 
 
+#define departmentButton 9
 #define relayPin 8
 #define buzzerPin 2
 #define downButtonPin 6
@@ -33,19 +34,26 @@ void(* resetFunc) (void) = 0;//declare reset function at address 0
 unsigned long delayAutoReset = 72000;
 unsigned long currTimeReset = 0;
 
+void setTrigDepartmentButton(){
+  
+}
+
 void setup()
 {  
   pinMode(downButtonPin, INPUT); // or INPUT_PULLUP
   pinMode(upButtonPin, INPUT); // or INPUT_PULLUP
   pinMode(relayPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
+  pinMode(departmentButton, INPUT_PULLUP);
+
+  //attachInterrupt(digitalPinToInterrupt(departmentButton), enterDoor, LOW);
   
   fps.Open(); // serial command to initialize fps
   fps.SetLED(true);
 
   lcd.begin(16, 2);
 
-  //resetSystem();
+  resetSystem();
   while(!fps.CheckEnrolled(adminFinger)){
     setupEnroll();
   }
@@ -56,24 +64,14 @@ void setup()
 void loop()
 {
   //if (millis() - currTimeReset >= delayAutoReset){ resetFunc(); }
-  
+  if(!digitalRead(departmentButton)) { enterDoor(); } 
+    
   currUser = IdentifyFinger();
   if (currUser == -1) return;  
 
   // enter door
   if (currUser != adminFinger){  
-     timeDoorOpen = millis();
-     EntrenceLCD(currUser);
-     
-     digitalWrite(buzzerPin, HIGH);
-     digitalWrite(relayPin ,HIGH);
-     
-     while(!(millis() - timeDoorOpen >= delayDoor)) { lcd.blink(); delay(100); lcd.noBlink(); delay(100); }
-     lcd.noBlink();
-
-     HomePageLCD();
-     digitalWrite(buzzerPin, LOW);
-     digitalWrite(relayPin, LOW);
+    enterDoor();
   }
 
   // menu
@@ -89,5 +87,5 @@ void loop()
     }
   }
 
-  delay(100);
+  delay(200);
 }

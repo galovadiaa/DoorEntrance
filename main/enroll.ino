@@ -49,8 +49,7 @@ bool Enroll()
   }
 
   if(fps.CheckEnrolled(enrollid)){
-    if (!deleteNotify()) { delay(1000); return true; }
-    fps.DeleteID(enrollid);
+    if(!DeleteByID(enrollid)) return true;
     delay(1000);
   }
   

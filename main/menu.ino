@@ -8,10 +8,10 @@ bool downArrow = false;
 unsigned long menuEnterTime = 0;
 unsigned long lastToggleTime = 0;
 
-int countPressed = 0;
 
 int selectorPos = 0;
 int rowSelector = 0;
+const int numOptions = 2;
 
 bool pressedMenu = false;
 
@@ -90,23 +90,23 @@ void selector(){
       }
 
       if(!digitalRead(upButtonPin) && !pressedMenu){
-        if(countPressed > 0) {countPressed--;}
+        if(rowSelector > 0) {rowSelector--;}
         pressedMenu = true;
 
         if (rowSelector > 0) { rowSelector--; }
       }
       if(!digitalRead(downButtonPin) && !pressedMenu){
-        if(countPressed < (ROWS - 1)) {countPressed++;}
+        if(rowSelector < (ROWS - 1)){ rowSelector++; }
+
         pressedMenu = true;
         
-        if(rowSelector == 0){ rowSelector++; }
       }
 
 //      if(countPressed >= 2){
 //        // replace functions on screen?
 //        selectorPos = 0;
 //      }
-      if (countPressed== 0){
+      if (rowSelector== 0){
           if(fps.IsPressFinger())
           {
             while(!Enroll());
@@ -114,7 +114,7 @@ void selector(){
             return;
           }
       }
-      else if (countPressed == 1){
+      else if (rowSelector == 1){
           if(fps.IsPressFinger()){
             Delete();
             delay(2000);
